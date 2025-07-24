@@ -1,12 +1,12 @@
 package by.bogdanov;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
+import by.bogdanov.config.FurnitureModule;
+import by.bogdanov.service.FurnitureAggregationService;
+import by.bogdanov.service.FurniturePostgresService;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger; // импорт для длгера
-
-import java.sql.Connection;
-import java.sql.DriverManager;
+import org.apache.logging.log4j.Logger;
 
 public class FurnitureApplication {
     private static final Logger logger = LogManager.getLogger(FurnitureApplication.class); // переменная для логирования
@@ -18,8 +18,10 @@ public class FurnitureApplication {
 
     public static void main(String[] args) {
         logger.info("Запуск приложения");
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             MongoClient mongoClient = MongoClients.create(MONGO_URL)) {
+        Injector injector = Guice.createInjector(new FurnitureModule());
+        FurnitureAggregationService transferService = injector.getInstance(FurnitureAggregationService.class);
+        try {
+            FurniturePostgresService pgService = injector.getInstance(FurniturePostgresService.class);
         } catch (Exception e) {
             logger.error("Ошибка при работе с БД ", e);
         }
